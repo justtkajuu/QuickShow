@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Movie from './Movie';
+import Movie from './.././/models/Movie.js';
 
 const showSchema = new mongoose.Schema(
     {
