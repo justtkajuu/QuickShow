@@ -142,7 +142,7 @@ export const getShow = async (req, res) => {
     })
     res.json({
       success:true,
-      movie : dateTime
+      movie , dateTime
     })
   } catch (error) {
     console.error(error);
