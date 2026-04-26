@@ -1,6 +1,6 @@
 import axios from "axios";
 import Movie from "./../models/Movie.js";
-import Show from './../models/Show.js';
+import Show from "./../models/Show.js";
 
 // Api to get now playing movies from TMDB API
 
@@ -66,7 +66,7 @@ export const addShow = async (req, res) => {
     }
 
     const showToCreate = [];
-    showsInput.forEach(show => {
+    showsInput.forEach((show) => {
       const showDate = show.date;
       show.time.forEach((time) => {
         const dateTimeString = `${showDate}T${time}`;
@@ -74,24 +74,82 @@ export const addShow = async (req, res) => {
           movie: movieId,
           showDateTime: new Date(dateTimeString),
           showPrice,
-          occupiedSeats : {}
-        })
-      })
-    })
+          occupiedSeats: {},
+        });
+      });
+    });
 
-    if(showToCreate.length > 0){
-      await Show.insertMany(showToCreate)
+    if (showToCreate.length > 0) {
+      await Show.insertMany(showToCreate);
     }
 
     res.json({
       success: true,
-      message: 'Show Added succesfully.'
-    })
-
-    
+      message: "Show Added succesfully.",
+    });
   } catch (error) {
     console.error(error);
     res.json({ success: false, message: error.message });
   }
 };
 
+// api to get all shows from the databse
+
+export const getShows = async (req, res) => {
+  try {
+    const shows = await Show.find({ showDateTime: { $gte: new Date() } })
+      .populate("movie")
+      .sort({ showDateTime: 1 });
+
+    // filter unique shows
+    const uniqueshows = new Set(shows.map((show) => show.movie));
+
+    res.json({
+      success: true,
+      message: Array.from(uniqueshows),
+    });
+  } catch (error) {
+    console.error(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Api to get single shows from database
+
+export const getShow = async (req, res) => {
+  try {
+    const { movieId } = req.params;
+    const shows = await Show.find({
+      movie: movieId,
+      showDateTime: { $gte: new Date() },
+    });
+
+    const movie = await Movie.findById(movieId)
+    const dateTime = {}
+
+    shows.forEach((show) => {
+      const date = show.showDateTime.toISOString().split("T")[0]
+      if(!dateTime[date]){
+        dateTime[date] = []
+      }
+      dateTime[date].push({
+        time: show.showDateTime,
+        showId : show._id
+      })
+    })
+    res.json({
+      success:true,
+      movie : dateTime
+    })
+  } catch (error) {
+    console.error(error);
+    res.json({
+      success:false,
+      message:error.message
+    })
+    
+  }
+};
