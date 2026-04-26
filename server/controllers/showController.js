@@ -97,15 +97,25 @@ export const addShow = async (req, res) => {
 
 export const getShows = async (req, res) => {
   try {
-    const shows = await Show.find({}).populate('movie')
+    const shows = await Show.find({}).populate("movie");
 
-    // filter unique shows
-    const uniqueshows = new Set(shows.map((show) => show.movie));
+    const uniqueMap = new Map();
+
+    shows.forEach((show) => {
+      if (show.movie) {
+        const id = show.movie._id.toString();
+
+        if (!uniqueMap.has(id)) {
+          uniqueMap.set(id, show.movie);
+        }
+      }
+    });
 
     res.json({
       success: true,
-      shows: Array.from(uniqueshows),
+      shows: Array.from(uniqueMap.values()),
     });
+
   } catch (error) {
     console.error(error);
     res.json({
