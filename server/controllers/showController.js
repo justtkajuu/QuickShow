@@ -106,7 +106,7 @@ export const getShows = async (req, res) => {
 
     res.json({
       success: true,
-      message: Array.from(uniqueshows),
+      shows: Array.from(uniqueshows),
     });
   } catch (error) {
     console.error(error);
