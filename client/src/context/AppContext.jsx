@@ -91,7 +91,7 @@ export const AppProvider = ({ children }) => {
     navigate,
     isAdmin,
     shows,
-    favoriteMovies,
+    favorites: favoriteMovies,
     fetchFavoriteMovie,
   };
     return (
