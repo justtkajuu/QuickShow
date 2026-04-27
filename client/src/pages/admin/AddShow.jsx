@@ -8,7 +8,7 @@ import { useAppContext } from "../../context/AppContext";
 
 const AddShow = () => {
 
-  const{axios, getToken, user} = useAppContext
+  const{axios, getToken, user} = useAppContext()
 
   const currency = import.meta.env.VITE_CURRENCY;
 
