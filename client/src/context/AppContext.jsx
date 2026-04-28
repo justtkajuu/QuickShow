@@ -97,6 +97,7 @@ export const AppProvider = ({ children }) => {
     isAdmin,
     adminLoading,
     shows,
+    favoriteMovies,
     favorites: favoriteMovies,
     fetchFavoriteMovie,
     image_base_url
