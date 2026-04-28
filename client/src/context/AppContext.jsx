@@ -13,6 +13,7 @@ axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
+  const [adminLoading, setAdminLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [shows, setShows] = useState([]);
   const [favoriteMovies, setFavoriteMovies] = useState([]);
@@ -37,7 +38,9 @@ export const AppProvider = ({ children }) => {
       }
     } catch (error) {
       console.error(error);
-    }
+    }finally {
+    setAdminLoading(false); // 👈 IMPORTANT
+  }
   };
 
   const fetchShows = async () => {
@@ -90,6 +93,7 @@ export const AppProvider = ({ children }) => {
     getToken,
     navigate,
     isAdmin,
+    adminLoading,
     shows,
     favorites: favoriteMovies,
     fetchFavoriteMovie,
