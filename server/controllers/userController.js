@@ -16,7 +16,7 @@ export const getUserBookings = async (req, res) => {
 
         res.json({
             success: true,
-            message: bookings
+            bookings
         })
 
     }catch(error){
