@@ -12,7 +12,7 @@ const Layout = () => {
     fetchIsAdmin()
   },[])
 
-  return  isAdmin ? (
+  return isAdmin ? (
     <>
       <AdminNavabar/>
       <div className='flex'>
