@@ -50,7 +50,7 @@ export const getAllShows = async (req, res) => {
 
         res.json({
             success: true,
-            message: shows
+            shows
         })
 
     }catch(error){
