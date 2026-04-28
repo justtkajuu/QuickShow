@@ -6,6 +6,7 @@ import { ArrowRightIcon, ClockIcon } from "lucide-react";
 import isoTimeFormat from "../lib/isoTimeFormat";
 import BlurCircle from "../components/BlurCircle";
 import { toast } from "react-hot-toast";
+import { useAppContext } from "../context/AppContext";
 
 const SeatLayout = () => {
   const groupRows = [
@@ -16,20 +17,22 @@ const SeatLayout = () => {
     ["I", "J"],
   ];
 
+  const {axios, getToken, user} = useAppContext()
   const { id, date } = useParams();
   const [selectseats, setSelectSeats] = useState([]);
   const [selectTime, setSelectTime] = useState(null);
   const [show, setShow] = useState(null);
-
+  const [occupiedseats, setoccupiedSeats] = useState([])
   const navigate = useNavigate();
 
   const getshow = async () => {
-    const show = dummyShowsData.find((show) => show._id === id);
-    if (show) {
-      setShow({
-        movie: show,
-        dateTime: dummyDateTimeData,
-      });
+    try {
+      const {data} = await axios.get(`/api/show/${id}`)
+      if(data.success){
+        setShow(data)
+      }
+    } catch (error) {
+      console.error(error);   
     }
   };
 
@@ -38,7 +41,10 @@ const SeatLayout = () => {
       return toast("Please select a time first");
     }
     if (!selectseats.includes(seatId) && selectseats.length > 4) {
-      return toast("You can select 5 seats");
+      return toast("You can only select 5 seats");
+    }
+    if(occupiedseats.includes(seatId)){
+      return toast('This seat is already booked')
     }
     setSelectSeats((prev) =>
       prev.includes(seatId)
@@ -56,7 +62,8 @@ const SeatLayout = () => {
             <button
               key={seatId}
               onClick={() => handleSeatClick(seatId)}
-              className={`w-8 h-8 rounded border border-primary/60  cursor-pointer ${selectseats.includes(seatId) && "bg-primary text-white"}`}
+              className={`w-8 h-8 rounded border border-primary/60  cursor-pointer ${selectseats.includes(seatId) && "bg-primary text-white"}
+              ${occupiedseats.includes(seatId) && 'opacity-50'}`}
             >
               {seatId}
             </button>
@@ -66,9 +73,58 @@ const SeatLayout = () => {
     </div>
   );
 
+  const getOccupiedSeats = async () => {
+    try {
+      const {data} = await axios.get(`/api/booking/seats/${selectTime.showId}`)
+
+      if(data.success){
+        setoccupiedSeats(data.occupiedseats)
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      console.error(error); 
+    }
+  }
+
+  const bookTickets = async () => {
+  try {
+    if (!user) return toast.error("Please login to proceed.");
+
+    if (!selectTime || selectseats.length === 0) {
+      return toast.error("Please select a time and seats");
+    }
+
+    const { data } = await axios.post(
+      "/api/booking/create",
+      { showId: selectTime.showId, selectedSeats: selectseats },
+      {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      }
+    );
+
+    if (data.success) {
+      toast.success(data.message);
+      navigate("/my-bookings");
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    toast.error(error.message);
+  }
+  };
+
   useEffect(() => {
     getshow();
-  }, []);
+  },[]);
+
+  useEffect(()=> {
+    if(selectTime){
+      getOccupiedSeats()
+    }
+  },[selectTime])
 
   return show ? (
     <div className="flex flex-col md:flex-row px-6 md:px-16 lg:px-40 py-30 md:pt-50">
@@ -109,7 +165,7 @@ const SeatLayout = () => {
           </div>
         </div>
 
-        <button onClick={()=> navigate('/my-bookings')} className="flex items-center gap-1 mt-20 px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer active:scale-95">Prcoeed to Checkout
+        <button onClick={bookTickets} className="flex items-center gap-1 mt-20 px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer active:scale-95">Prcoeed to Checkout
           <ArrowRightIcon strokeWidth={3} className="w-4 h-4"/>
         </button>
       </div>
