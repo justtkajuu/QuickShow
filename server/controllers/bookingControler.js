@@ -70,7 +70,7 @@ export const createBooking = async (req, res ) => {
     }
 }
 
-export const getOcuupiedSeats = async (req, res) => {
+export const getOccupiedSeats = async (req, res) => {
     try{
        const {showId} = req.params
        const showData = await Show.findById(showId)
