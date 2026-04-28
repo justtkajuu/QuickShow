@@ -5,7 +5,7 @@ import Show from "../models/Show.js"
 import User from "../models/User.js"
 
 export const isAdmin = async (req, res) => {
-    req.json({
+    res.json({
         success: true,
         isAdmin :true
     })
