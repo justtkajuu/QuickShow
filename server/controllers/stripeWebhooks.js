@@ -25,7 +25,7 @@ export const stripeWebhooks = async (request, response) => {
             const {bookingId} = session.metadata
 
             await Booking.findByIdAndDelete(bookingId , {
-                ispaid : true,
+                isPaid : true,
                 paymentLink: ""
             })
         }
