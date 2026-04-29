@@ -16,7 +16,7 @@ const MovieCard = ({ movie }) => {
   return (
     <div
       onClick={handleNavigate}
-      className='flex flex-col justify-between p-3 bg-gray-800 rounded-2xl hover:-translate-y-1 transition duration-300 w-60 cursor-pointer'
+      className='flex flex-col justify-between p-4 bg-gray-800 rounded-2xl hover:-translate-y-1 transition duration-300 w-full cursor-pointer'
     >
       <img
         src={image_base_url + movie.backdrop_path}
