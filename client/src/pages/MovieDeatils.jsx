@@ -11,11 +11,12 @@ import toast from "react-hot-toast";
 
 const MovieDeatils = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [show, setShow] = useState(null);
   const [trailerKey, setTrailerKey] = useState(null);
   const [showTrailer, setShowTrailer] = useState(false);
-
-  const navigate = useNavigate();
+  const [loadingTrailer, setLoadingTrailer] = useState(false);
 
   const {
     shows,
@@ -27,13 +28,15 @@ const MovieDeatils = () => {
     image_base_url,
   } = useAppContext();
 
+  const closeTrailer = () => {
+    setShowTrailer(false);
+    setTrailerKey(null);
+  };
+
   const getShow = async () => {
     try {
       const { data } = await axios.get(`/api/show/${id}`);
-
-      if (data.success) {
-        setShow(data);
-      }
+      if (data.success) setShow(data);
     } catch (error) {
       console.error(error);
     }
@@ -41,6 +44,8 @@ const MovieDeatils = () => {
 
   const handleTrailer = async () => {
     try {
+      setLoadingTrailer(true);
+
       const { data } = await axios.get(`/api/show/trailer/${id}`);
 
       if (data.success && data.trailerKey) {
@@ -52,6 +57,8 @@ const MovieDeatils = () => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to load trailer");
+    } finally {
+      setLoadingTrailer(false);
     }
   };
 
@@ -84,6 +91,15 @@ const MovieDeatils = () => {
   useEffect(() => {
     getShow();
   }, [id]);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") closeTrailer();
+    };
+
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
   return show ? (
     <div className="px-6 md:px-16 lg:px-40 pt-30 md:pt-50">
@@ -121,10 +137,11 @@ const MovieDeatils = () => {
           <div className="flex items-center flex-wrap gap-4 mt-4">
             <button
               onClick={handleTrailer}
-              className="flex items-center gap-2 px-7 py-3 text-sm bg-gray-800 hover:bg-gray-900 transition rounded-md font-medium cursor-pointer active:scale-95"
+              disabled={loadingTrailer}
+              className="flex items-center gap-2 px-7 py-3 text-sm bg-gray-800 hover:bg-gray-900 transition rounded-md font-medium cursor-pointer active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <PlayCircleIcon className="w-5 h-5" />
-              Watch Trailer
+              {loadingTrailer ? "Loading..." : "Watch Trailer"}
             </button>
 
             <a
@@ -194,13 +211,16 @@ const MovieDeatils = () => {
       </div>
 
       {showTrailer && trailerKey && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4">
-          <div className="relative w-full max-w-4xl">
+        <div
+          onClick={closeTrailer}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-4xl"
+          >
             <button
-              onClick={() => {
-                setShowTrailer(false);
-                setTrailerKey(null);
-              }}
+              onClick={closeTrailer}
               className="absolute -top-12 right-0 text-white bg-gray-800 hover:bg-gray-700 p-2 rounded-full"
             >
               <X className="w-6 h-6" />
@@ -218,9 +238,7 @@ const MovieDeatils = () => {
       )}
     </div>
   ) : (
-    <div>
-      <Loading />
-    </div>
+    <Loading />
   );
 };
 
