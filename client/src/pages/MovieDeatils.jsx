@@ -121,7 +121,7 @@ const MovieDeatils = () => {
 
       <p className='text-lg font-medium mt-20 mb-8'>You may Also Like</p>
       <div className='flex flex-wrap max-sm:justify-center justify-between gap-8'>
-        {shows.slice(0,3).map((movie,index)=>(
+        {shows.slice(0,4).map((movie,index)=>(
           <MovieCard key={index} movie={movie}/>
         ))}
       </div>
