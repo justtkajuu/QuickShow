@@ -10,8 +10,8 @@ const transporter = nodemailer.createTransport({
     },
 })
 
-const senndEmail = async ({to, subject, body}) => {
-    const response = await transporter.senndEmail({
+const sendEmail = async ({to, subject, body}) => {
+    const response = await transporter.sendMail({
         from: process.env.SENDER_EMAIL,
         to,
         subject,
@@ -20,4 +20,4 @@ const senndEmail = async ({to, subject, body}) => {
     return response
 }
 
-export default senndEmail
+export default sendEmail
