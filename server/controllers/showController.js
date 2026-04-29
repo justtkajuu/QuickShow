@@ -174,3 +174,50 @@ export const getShow = async (req, res) => {
     });
   }
 };
+
+
+// api to get the movie trailer from database
+
+export const getMovieTrailer = async (req, res) => {
+  try {
+    const { movieId } = req.params;
+
+    console.log("Trailer movieId:", movieId);
+    console.log("TMDB token exists:", !!process.env.TMDB_ACCESS_TOKEN);
+
+    const { data } = await axios.get(
+      `https://api.themoviedb.org/3/movie/${movieId}/videos`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
+        },
+        timeout: 15000,
+      }
+    );
+
+    const trailer = data.results.find(
+      (video) => video.site === "YouTube" && video.type === "Trailer"
+    );
+
+    res.json({
+      success: true,
+      trailerKey: trailer?.key || null,
+    });
+  } catch (error) {
+    console.log("---- TRAILER ERROR ----");
+    console.log("Code:", error.code);
+    console.log("Message:", error.message);
+    console.log("Status:", error.response?.status);
+    console.log("Response:", error.response?.data);
+
+    res.status(500).json({
+      success: false,
+      message:
+        error.response?.data?.status_message ||
+        error.message ||
+        error.code ||
+        "Failed to fetch trailer",
+    });
+  }
+};

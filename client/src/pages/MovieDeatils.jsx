@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { dummyDateTimeData, dummyShowsData } from "../assets/assets";
 import BlurCircle from "../components/BlurCircle";
-import { Heart, PlayCircleIcon, StarIcon } from "lucide-react";
+import { Heart, PlayCircleIcon, StarIcon, X } from "lucide-react";
 import TimeFormat from "../lib/TimeFormat";
 import DateSelect from "../components/DateSelect";
 import MovieCard from "../components/MovieCard";
@@ -13,7 +12,11 @@ import toast from "react-hot-toast";
 const MovieDeatils = () => {
   const { id } = useParams();
   const [show, setShow] = useState(null);
+  const [trailerKey, setTrailerKey] = useState(null);
+  const [showTrailer, setShowTrailer] = useState(false);
+
   const navigate = useNavigate();
+
   const {
     shows,
     axios,
@@ -36,6 +39,22 @@ const MovieDeatils = () => {
     }
   };
 
+  const handleTrailer = async () => {
+    try {
+      const { data } = await axios.get(`/api/show/trailer/${id}`);
+
+      if (data.success && data.trailerKey) {
+        setTrailerKey(data.trailerKey);
+        setShowTrailer(true);
+      } else {
+        toast.error("Trailer not available");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load trailer");
+    }
+  };
+
   const handleFavorite = async () => {
     try {
       if (!user) return toast.error("Please login to proceed.");
@@ -47,7 +66,7 @@ const MovieDeatils = () => {
           headers: {
             Authorization: `Bearer ${await getToken()}`,
           },
-        },
+        }
       );
 
       if (data.success) {
@@ -71,7 +90,7 @@ const MovieDeatils = () => {
       <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
         <img
           src={image_base_url + show.movie.poster_path}
-          alt=""
+          alt={show.movie.title}
           className="max-md:mx-auto rounded-xl h-104 max-w-70 object-cover"
         />
 
@@ -100,8 +119,11 @@ const MovieDeatils = () => {
           </p>
 
           <div className="flex items-center flex-wrap gap-4 mt-4">
-            <button className="flex items-center gap-2 px-7 py-3 text-sm bg-gray-800 hover:bg-gray-900 transition rounded-md font-medium cursor-pointer active:scale-95">
-              <PlayCircleIcon className={`w-5 h-5`} />
+            <button
+              onClick={handleTrailer}
+              className="flex items-center gap-2 px-7 py-3 text-sm bg-gray-800 hover:bg-gray-900 transition rounded-md font-medium cursor-pointer active:scale-95"
+            >
+              <PlayCircleIcon className="w-5 h-5" />
               Watch Trailer
             </button>
 
@@ -117,7 +139,11 @@ const MovieDeatils = () => {
               className="bg-gray-700 p-2.5 rounded-full transition cursor-pointer active:scale-95"
             >
               <Heart
-                className={`w-5 h-5 ${favorites?.find((movie) => movie._id === id) ? "fill-primary text-white" : ""}`}
+                className={`w-5 h-5 ${
+                  favorites?.find((movie) => movie._id === id)
+                    ? "fill-primary text-white"
+                    : ""
+                }`}
               />
             </button>
           </div>
@@ -148,6 +174,7 @@ const MovieDeatils = () => {
       <DateSelect dateTime={show.dateTime} id={id} />
 
       <p className="text-lg font-medium mt-20 mb-8">You may Also Like</p>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 mt-4">
         {shows.slice(0, 4).map((movie, index) => (
           <MovieCard key={index} movie={movie} />
@@ -158,13 +185,37 @@ const MovieDeatils = () => {
         <button
           onClick={() => {
             navigate("/movies");
-            scrollTo(0, 0);
+            window.scrollTo(0, 0);
           }}
           className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-md font-medium cursor-pointer"
         >
           Show More
         </button>
       </div>
+
+      {showTrailer && trailerKey && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4">
+          <div className="relative w-full max-w-4xl">
+            <button
+              onClick={() => {
+                setShowTrailer(false);
+                setTrailerKey(null);
+              }}
+              className="absolute -top-12 right-0 text-white bg-gray-800 hover:bg-gray-700 p-2 rounded-full"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <iframe
+              className="w-full aspect-video rounded-xl"
+              src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1`}
+              title="Movie Trailer"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      )}
     </div>
   ) : (
     <div>
