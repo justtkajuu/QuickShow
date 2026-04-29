@@ -43,7 +43,7 @@ const SeatLayout = () => {
     if (!selectseats.includes(seatId) && selectseats.length > 4) {
       return toast("You can only select 5 seats");
     }
-    if(occupiedseats.includes(seatId)){
+    if(occupiedseats?.includes(seatId)){
       return toast('This seat is already booked')
     }
     setSelectSeats((prev) =>
@@ -63,7 +63,7 @@ const SeatLayout = () => {
               key={seatId}
               onClick={() => handleSeatClick(seatId)}
               className={`w-8 h-8 rounded border border-primary/60  cursor-pointer ${selectseats.includes(seatId) && "bg-primary text-white"}
-              ${occupiedseats.includes(seatId) && 'opacity-50'}`}
+              ${occupiedseats?.includes(seatId) && 'opacity-50'}`}
             >
               {seatId}
             </button>
@@ -78,7 +78,7 @@ const SeatLayout = () => {
       const {data} = await axios.get(`/api/booking/seats/${selectTime.showId}`)
 
       if(data.success){
-        setoccupiedSeats(data.occupiedseats)
+        setoccupiedSeats(data.occupiedSeats || [])
       }else{
         toast.error(data.message)
       }
@@ -106,8 +106,8 @@ const SeatLayout = () => {
     );
 
     if (data.success) {
-      toast.success(data.message);
-      navigate("/my-bookings");
+      window.location.href = data.url;
+      
     } else {
       toast.error(data.message);
     }
