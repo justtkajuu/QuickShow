@@ -67,7 +67,7 @@ const MovieDeatils = () => {
   }, [id]);
 
   return show ? (
-    <div className="ox-6 md:px-16 lg:px-40 pt-30 md:pt-50">
+    <div className="px-6 md:px-16 lg:px-40 pt-30 md:pt-50">
       <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
         <img
           src={image_base_url + show.movie.poster_path}
@@ -134,7 +134,7 @@ const MovieDeatils = () => {
                 src={
                   cast.profile_path
                     ? image_base_url + cast.profile_path
-                    : "/profile.png"
+                    : "https://placehold.co/100x100?text=No+Image"
                 }
                 alt={cast.name}
                 className="rounded-full h-20 md:h-20 aspect-square object-cover bg-gray-800"
