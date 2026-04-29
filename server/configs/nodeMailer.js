@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 
-const transporter = nodemailer.createTestAccount({
+const transporter = nodemailer.createTransport({
     host:'smtp-relay.brevo.com',
     port: 587,
     auth: {
