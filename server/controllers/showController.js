@@ -294,3 +294,49 @@ export const getTrendingMovies = async (req, res) => {
     });
   }
 };
+
+export const getMovieDetailsFromTMDB = async (req, res) => {
+  try {
+    const { movieId } = req.params;
+
+    const { data: movieDetails } = await axios.get(
+      `https://api.themoviedb.org/3/movie/${movieId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
+        },
+      }
+    );
+
+    const { data: credits } = await axios.get(
+      `https://api.themoviedb.org/3/movie/${movieId}/credits`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
+        },
+      }
+    );
+
+    res.json({
+      success: true,
+      movie: {
+        _id: movieDetails.id,
+        title: movieDetails.title,
+        overview: movieDetails.overview,
+        poster_path: movieDetails.poster_path,
+        backdrop_path: movieDetails.backdrop_path,
+        genres: movieDetails.genres,
+        casts: credits.cast,
+        release_date: movieDetails.release_date,
+        runtime: movieDetails.runtime,
+        vote_average: movieDetails.vote_average,
+        original_language: movieDetails.original_language,
+      },
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

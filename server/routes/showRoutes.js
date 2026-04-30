@@ -1,6 +1,6 @@
 import express from "express";
 
-import { addShow, getMovieTrailer, getNowPlayingMovies, getShow, getShows, getTrendingMovies, getUpcomingMovies } from './../controllers/showController.js';
+import { addShow, getMovieDetailsFromTMDB, getMovieTrailer, getNowPlayingMovies, getShow, getShows, getTrendingMovies, getUpcomingMovies } from './../controllers/showController.js';
 import { protectAdmin } from "../middlware/auth.js";
 
 const showRouter = express.Router()
@@ -12,5 +12,6 @@ showRouter.get("/upcoming", getUpcomingMovies);
 showRouter.get("/trending", getTrendingMovies);
 showRouter.get("/:movieId", getShow)
 showRouter.get("/trailer/:movieId", getMovieTrailer);
+showRouter.get("/tmdb/:movieId", getMovieDetailsFromTMDB);
 
 export default showRouter

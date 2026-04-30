@@ -28,6 +28,8 @@ const MovieDeatils = () => {
     image_base_url,
   } = useAppContext();
 
+  const hasShows = show?.dateTime && Object.keys(show.dateTime).length > 0;
+
   const closeTrailer = () => {
     setShowTrailer(false);
     setTrailerKey(null);
@@ -36,9 +38,32 @@ const MovieDeatils = () => {
   const getShow = async () => {
     try {
       const { data } = await axios.get(`/api/show/${id}`);
-      if (data.success) setShow(data);
+
+      if (data.success) {
+        setShow(data);
+      } else {
+        const tmdbRes = await axios.get(`/api/show/tmdb/${id}`);
+
+        if (tmdbRes.data.success) {
+          setShow({
+            movie: tmdbRes.data.movie,
+            dateTime: {},
+          });
+        }
+      }
     } catch (error) {
-      console.error(error);
+      try {
+        const tmdbRes = await axios.get(`/api/show/tmdb/${id}`);
+
+        if (tmdbRes.data.success) {
+          setShow({
+            movie: tmdbRes.data.movie,
+            dateTime: {},
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -73,7 +98,7 @@ const MovieDeatils = () => {
           headers: {
             Authorization: `Bearer ${await getToken()}`,
           },
-        },
+        }
       );
 
       if (data.success) {
@@ -115,7 +140,9 @@ const MovieDeatils = () => {
         />
 
         <div className="relative flex flex-col gap-3">
-          <p className="text-primary font-medium tracking-wide">ENGLISH</p>
+          <p className="text-primary font-medium tracking-wide">
+            {show.movie.original_language?.toUpperCase() || "MOVIE"}
+          </p>
 
           <h1 className="text-4xl font-semibold max-w-96 text-balance text-white">
             {show.movie.title}
@@ -123,7 +150,7 @@ const MovieDeatils = () => {
 
           <div className="flex items-center gap-2 text-gray-300">
             <StarIcon className="w-5 h-5 text-primary fill-primary" />
-            {show.movie.vote_average.toFixed(1)} User Rating
+            {show.movie.vote_average?.toFixed(1)} User Rating
           </div>
 
           <p className="text-gray-400 mt-2 text-sm leading-relaxed max-w-xl">
@@ -132,8 +159,8 @@ const MovieDeatils = () => {
 
           <p className="text-gray-300">
             {TimeFormat(show.movie.runtime)} .{" "}
-            {show.movie.genres.map((genre) => genre.name).join(", ")} .{" "}
-            {show.movie.release_date.split("-")[0]}
+            {show.movie.genres?.map((genre) => genre.name).join(", ")} .{" "}
+            {show.movie.release_date?.split("-")[0]}
           </p>
 
           <div className="flex items-center flex-wrap gap-4 mt-4">
@@ -146,12 +173,21 @@ const MovieDeatils = () => {
               {loadingTrailer ? "Loading..." : "Watch Trailer"}
             </button>
 
-            <a
-              className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer active:scale-95 shadow-md shadow-primary/30 hover:shadow-primary/60"
-              href="#dateSelect"
-            >
-              Buy Tickets
-            </a>
+            {hasShows ? (
+              <a
+                className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer active:scale-95 shadow-md shadow-primary/30 hover:shadow-primary/60"
+                href="#dateSelect"
+              >
+                Buy Tickets
+              </a>
+            ) : (
+              <button
+                disabled
+                className="px-10 py-3 text-sm bg-gray-700 text-gray-400 rounded-full font-medium cursor-not-allowed"
+              >
+                Not Available
+              </button>
+            )}
 
             <button
               onClick={handleFavorite}
@@ -175,7 +211,7 @@ const MovieDeatils = () => {
 
       <div className="relative z-10 overflow-x-auto no-scrollbar mt-8 pb-4">
         <div className="flex items-center gap-5 w-max px-4">
-          {show.movie.casts.slice(0, 12).map((cast, index) => (
+          {show.movie.casts?.slice(0, 12).map((cast, index) => (
             <div
               key={index}
               className="group flex flex-col items-center text-center"
@@ -198,9 +234,11 @@ const MovieDeatils = () => {
         </div>
       </div>
 
-      <div className="relative z-10">
-        <DateSelect dateTime={show.dateTime} id={id} />
-      </div>
+      {hasShows && (
+        <div className="relative z-10">
+          <DateSelect dateTime={show.dateTime} id={id} />
+        </div>
+      )}
 
       <p className="relative z-10 text-lg font-medium mt-20 mb-8">
         You may Also Like
