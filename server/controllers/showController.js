@@ -262,3 +262,35 @@ export const getUpcomingMovies = async (req, res) => {
     });
   }
 };
+
+// Api to get the trending movies from tmdb sebsite
+
+export const getTrendingMovies = async (req, res) => {
+  try {
+    const { data } = await axios.get(
+      "https://api.themoviedb.org/3/trending/movie/week",
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
+        },
+        timeout: 15000,
+      }
+    );
+
+    res.json({
+      success: true,
+      movies: data.results || [],
+    });
+  } catch (error) {
+    console.log("TRENDING ERROR:", error.message);
+
+    res.status(500).json({
+      success: false,
+      message:
+        error.response?.data?.status_message ||
+        error.message ||
+        "Failed to fetch trending movies",
+    });
+  }
+};
