@@ -221,3 +221,43 @@ export const getMovieTrailer = async (req, res) => {
     });
   }
 };
+
+// api to get ucoming movies from tmdb website
+export const getUpcomingMovies = async (req, res) => {
+  try {
+    console.log("Fetching upcoming movies...");
+    console.log("Token exists:", !!process.env.TMDB_ACCESS_TOKEN);
+
+    const { data } = await axios.get(
+      "https://api.themoviedb.org/3/movie/upcoming",
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
+        },
+        timeout: 15000,
+      }
+    );
+
+    console.log("Movies count:", data.results?.length);
+
+    res.json({
+      success: true,
+      movies: data.results || [],
+    });
+  } catch (error) {
+    console.log("---- UPCOMING ERROR ----");
+    console.log("Code:", error.code);
+    console.log("Message:", error.message);
+    console.log("Status:", error.response?.status);
+    console.log("Response:", error.response?.data);
+
+    res.status(500).json({
+      success: false,
+      message:
+        error.response?.data?.status_message ||
+        error.message ||
+        "Failed to fetch upcoming movies",
+    });
+  }
+};
