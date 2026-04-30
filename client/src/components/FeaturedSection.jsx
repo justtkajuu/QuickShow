@@ -11,7 +11,7 @@ const FeaturedSection = () => {
 
   return (
     <div className="relative px-6 md:px-16 lg:px-24 xl:px-44 overflow-hidden">
-      <BlurCircle top="40px" right="-120px"/>
+      <BlurCircle top="40px" left="-120px"/>
 
       <div className="relative z-10 flex items-center justify-between pt-20 pb-10">
         <div>
@@ -47,7 +47,7 @@ const FeaturedSection = () => {
             navigate("/movies");
             window.scrollTo(0, 0);
           }}
-          className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer shadow-md shadow-primary/30 hover:shadow-primary/60 active:scale-95"
+          className="px-10 py-3 mb-5 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer shadow-md shadow-primary/30 hover:shadow-primary/60 active:scale-95"
         >
           Show More
         </button>
