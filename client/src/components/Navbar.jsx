@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { assets } from "./../assets/assets";
 import { MenuIcon, SearchIcon, TicketPlus, XIcon } from "lucide-react";
@@ -9,16 +9,54 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [search, setSearch] = useState("");
+  const [allMovies, setAllMovies] = useState([]);
 
   const { user } = useUser();
   const { openSignIn } = useClerk();
   const navigate = useNavigate();
-  const { favorites, shows, image_base_url } = useAppContext();
+
+  const { favorites, shows, image_base_url, axios } = useAppContext();
+
+  const fetchSearchMovies = async () => {
+    try {
+      const [trendingRes, upcomingRes] = await Promise.all([
+        axios.get("/api/show/trending"),
+        axios.get("/api/show/upcoming"),
+      ]);
+
+      const trendingMovies = trendingRes.data.success
+        ? trendingRes.data.movies
+        : [];
+
+      const upcomingMovies = upcomingRes.data.success
+        ? upcomingRes.data.movies
+        : [];
+
+      const mergedMovies = [...shows, ...trendingMovies, ...upcomingMovies];
+
+      const uniqueMovies = mergedMovies.filter(
+        (movie, index, self) =>
+          index ===
+          self.findIndex(
+            (m) => String(m._id || m.id) === String(movie._id || movie.id)
+          )
+      );
+
+      setAllMovies(uniqueMovies);
+    } catch (error) {
+      console.error(error);
+      setAllMovies(shows);
+    }
+  };
+
+  useEffect(() => {
+    fetchSearchMovies();
+  }, [shows]);
 
   const filteredMovies =
     search.trim().length > 0
-      ? shows.filter((movie) =>
-          movie.title.toLowerCase().includes(search.toLowerCase())
+      ? allMovies.filter((movie) =>
+          movie.title?.toLowerCase().includes(search.toLowerCase())
         )
       : [];
 
@@ -47,13 +85,54 @@ const Navbar = () => {
             onClick={() => setIsOpen(false)}
           />
 
-          <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false); }} to="/">Home</Link>
-          <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false); }} to="/movies">Movies</Link>
-          <Link onClick={() => { window.scrollTo(0,0); setIsOpen(false); }} to="/trending">Trending</Link>
-          <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false); }} to="/releases">Releases</Link>
+          <Link
+            onClick={() => {
+              window.scrollTo(0, 0);
+              setIsOpen(false);
+            }}
+            to="/"
+          >
+            Home
+          </Link>
+
+          <Link
+            onClick={() => {
+              window.scrollTo(0, 0);
+              setIsOpen(false);
+            }}
+            to="/movies"
+          >
+            Movies
+          </Link>
+
+          <Link
+            onClick={() => {
+              window.scrollTo(0, 0);
+              setIsOpen(false);
+            }}
+            to="/trending"
+          >
+            Trending
+          </Link>
+
+          <Link
+            onClick={() => {
+              window.scrollTo(0, 0);
+              setIsOpen(false);
+            }}
+            to="/releases"
+          >
+            Releases
+          </Link>
 
           {favorites?.length > 0 && (
-            <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false); }} to="/favorite">
+            <Link
+              onClick={() => {
+                window.scrollTo(0, 0);
+                setIsOpen(false);
+              }}
+              to="/favorite"
+            >
               Favorites
             </Link>
           )}
@@ -61,7 +140,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-6">
           <SearchIcon
-            onClick={() => setShowSearch(!showSearch)}
+            onClick={() => setShowSearch(true)}
             className="max-md:hidden w-6 h-6 cursor-pointer hover:text-primary transition"
           />
 
@@ -92,60 +171,72 @@ const Navbar = () => {
       </div>
 
       {showSearch && (
-  <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-start justify-center px-4 pt-28">
-    <div className="w-full max-w-xl bg-gray-900/95 border border-white/10 rounded-3xl p-4 shadow-2xl shadow-primary/20">
-      <div className="flex items-center gap-3">
-        <SearchIcon className="w-5 h-5 text-primary" />
+        <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-start justify-center px-4 pt-28">
+          <div className="w-full max-w-xl bg-gray-900/95 border border-white/10 rounded-3xl p-4 shadow-2xl shadow-primary/20">
+            <div className="flex items-center gap-3">
+              <SearchIcon className="w-5 h-5 text-primary" />
 
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search movies..."
-          autoFocus
-          className="flex-1 bg-transparent text-white outline-none"
-        />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search movies..."
+                autoFocus
+                className="flex-1 bg-transparent text-white outline-none"
+              />
 
-        <XIcon
-          onClick={() => {
-            setShowSearch(false);
-            setSearch("");
-          }}
-          className="w-5 h-5 cursor-pointer hover:text-primary transition"
-        />
-      </div>
+              <XIcon
+                onClick={() => {
+                  setShowSearch(false);
+                  setSearch("");
+                }}
+                className="w-5 h-5 cursor-pointer hover:text-primary transition"
+              />
+            </div>
 
-      <div className="mt-4 max-h-80 overflow-y-auto space-y-2">
-        {filteredMovies.slice(0, 6).map((movie) => (
-          <div
-            key={movie._id}
-            onClick={() => handleMovieClick(movie._id)}
-            className="flex items-center gap-3 p-2 rounded-2xl hover:bg-primary/20 cursor-pointer transition"
-          >
-            <img
-              src={`${image_base_url}${movie.poster_path}`}
-              alt={movie.title}
-              className="w-12 h-16 object-cover rounded-lg"
-            />
+            <div className="mt-4 max-h-80 overflow-y-auto space-y-2">
+              {filteredMovies.slice(0, 8).map((movie) => (
+                <div
+                  key={movie._id || movie.id}
+                  onClick={() => handleMovieClick(movie._id || movie.id)}
+                  className="flex items-center gap-3 p-2 rounded-2xl hover:bg-primary/20 cursor-pointer transition"
+                >
+                  <img
+                    src={
+                      movie.poster_path
+                        ? image_base_url + movie.poster_path
+                        : "https://placehold.co/100x140?text=No+Image"
+                    }
+                    alt={movie.title || "Movie"}
+                    className="w-12 h-16 object-cover rounded-lg"
+                  />
 
-            <div>
-              <p className="text-sm font-medium text-white">{movie.title}</p>
-              <p className="text-xs text-gray-400">
-                {movie.release_date?.split("-")[0]}
-              </p>
+                  <div>
+                    <p className="text-sm font-medium text-white">
+                      {movie.title}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {movie.release_date?.split("-")[0] || "N/A"}
+                    </p>
+                  </div>
+                </div>
+              ))}
+
+              {search && filteredMovies.length === 0 && (
+                <p className="text-sm text-gray-400 text-center py-6">
+                  No movie found
+                </p>
+              )}
+
+              {!search && (
+                <p className="text-sm text-gray-500 text-center py-6">
+                  Search from Now Showing, Trending and Upcoming movies
+                </p>
+              )}
             </div>
           </div>
-        ))}
-
-        {search && filteredMovies.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-6">
-            No movie found
-          </p>
-        )}
-      </div>
-    </div>
-  </div>
-)}
+        </div>
+      )}
     </div>
   );
 };

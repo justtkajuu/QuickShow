@@ -61,7 +61,7 @@ const MovieCard = ({ movie }) => {
           className="px-4 py-2 text-xs rounded-full font-medium
           bg-primary hover:bg-primary-dull
           transition duration-300 shadow-md shadow-primary/30
-          hover:shadow-primary/60 active:scale-95"
+          hover:shadow-primary/60 active:scale-95 cursor-pointer"
         >
           View Details
         </button>
