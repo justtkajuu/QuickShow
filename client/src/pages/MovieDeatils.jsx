@@ -39,22 +39,32 @@ const MovieDeatils = () => {
     try {
       const { data } = await axios.get(`/api/show/${id}`);
 
-      if (data.success) {
+      if (data.success && data.movie) {
         setShow(data);
-      } else {
-        const tmdbRes = await axios.get(`/api/show/tmdb/${id}`);
-        if (tmdbRes.data.success) {
-          setShow({ movie: tmdbRes.data.movie, dateTime: {} });
-        }
+        return;
+      }
+
+      const tmdbRes = await axios.get(`/api/show/tmdb/${id}`);
+
+      if (tmdbRes.data.success && tmdbRes.data.movie) {
+        setShow({
+          movie: tmdbRes.data.movie,
+          dateTime: {},
+        });
       }
     } catch (error) {
       try {
         const tmdbRes = await axios.get(`/api/show/tmdb/${id}`);
-        if (tmdbRes.data.success) {
-          setShow({ movie: tmdbRes.data.movie, dateTime: {} });
+
+        if (tmdbRes.data.success && tmdbRes.data.movie) {
+          setShow({
+            movie: tmdbRes.data.movie,
+            dateTime: {},
+          });
         }
       } catch (err) {
         console.error(err);
+        toast.error("Movie details not found");
       }
     }
   };
@@ -89,7 +99,7 @@ const MovieDeatils = () => {
           headers: {
             Authorization: `Bearer ${await getToken()}`,
           },
-        }
+        },
       );
 
       if (data.success) {
