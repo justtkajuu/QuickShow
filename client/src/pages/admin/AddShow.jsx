@@ -34,30 +34,39 @@ const AddShow = () => {
   };
 
   const handleDateTimeAdd = () => {
-    if (!dateTimeInput) return;
-    const [date, time] = dateTimeInput.split("T");
-    if (!date || !time) return;
+  if (!dateTimeInput) return;
 
-    setDateTimeSelection((prev) => {
-      const times = prev[date] || [];
-      if (!times.includes(time)) {
-        return { ...prev, [date]: [...times, time] };
-        return prev;
-      }
-    });
+  const [date, time] = dateTimeInput.split("T");
+  if (!date || !time) return;
+
+  setDateTimeSelection((prev) => {
+    const times = prev[date] || [];
+
+    if (times.includes(time)) {
+      return prev;
+    }
+
+    return {
+      ...prev,
+      [date]: [...times, time],
+    };
+  });
   };
 
   const handleRemoveTime = (date, time) => {
-    setDateTimeSelection((prev) => {
-      const filteredTimes = prev[date].filter((t) => t !== time);
-      if (filteredTimes.length === 0) {
-        const { [date]: _, ...rest } = prev;
-        return rest;
-      }
-      return {
-        ...(prev[date] = filteredTimes),
-      };
-    });
+  setDateTimeSelection((prev) => {
+    const filteredTimes = prev[date].filter((t) => t !== time);
+
+    if (filteredTimes.length === 0) {
+      const { [date]: _, ...rest } = prev;
+      return rest;
+    }
+
+    return {
+      ...prev,
+      [date]: filteredTimes,
+    };
+  });
   };
 
   const handleSubmit = async () => {
