@@ -73,7 +73,7 @@ const MovieDeatils = () => {
           headers: {
             Authorization: `Bearer ${await getToken()}`,
           },
-        }
+        },
       );
 
       if (data.success) {
@@ -103,7 +103,7 @@ const MovieDeatils = () => {
 
   return show ? (
     <div className="relative px-6 md:px-16 lg:px-40 pt-30 md:pt-50 min-h-screen overflow-hidden">
-      <BlurCircle top="80px" left="-120px"/>
+      <BlurCircle top="80px" left="-120px" />
       <BlurCircle bottom="120px" right="-120px" />
 
       <div className="relative z-10 flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
@@ -180,7 +180,7 @@ const MovieDeatils = () => {
               key={index}
               className="group flex flex-col items-center text-center"
             >
-              <img 
+              <img
                 loading="lazy"
                 src={
                   cast.profile_path
@@ -245,9 +245,9 @@ const MovieDeatils = () => {
 
             <iframe
               className="w-full aspect-video rounded-2xl border border-white/10 shadow-2xl shadow-primary/20"
-              src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1`}
+              src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&rel=0&modestbranding=1&vq=hd1080`}
               title="Movie Trailer"
-              allow="autoplay; encrypted-media"
+              allow="autoplay; encrypted-media; picture-in-picture"
               allowFullScreen
             ></iframe>
           </div>
