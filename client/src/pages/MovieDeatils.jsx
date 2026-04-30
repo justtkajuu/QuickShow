@@ -134,70 +134,66 @@ const MovieDeatils = () => {
       <div className="relative z-10 flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
         <img
           loading="lazy"
-          src={image_base_url + show.movie.poster_path}
-          alt={show.movie.title}
+          src={
+            show.movie?.poster_path
+              ? image_base_url + show.movie.poster_path
+              : "https://placehold.co/300x450?text=No+Image"
+          }
+          alt={show.movie?.title || "Movie"}
           className="max-md:mx-auto rounded-2xl h-104 max-w-70 object-cover border border-white/10 shadow-xl shadow-primary/20"
         />
 
-        <div className="relative flex flex-col gap-3">
-          <p className="text-primary font-medium tracking-wide">
-            {show.movie.original_language?.toUpperCase() || "MOVIE"}
-          </p>
-
-          <h1 className="text-4xl font-semibold max-w-96 text-balance text-white">
-            {show.movie.title}
+        <div className="flex flex-col gap-3">
+          <h1 className="text-4xl font-semibold text-white">
+            {show.movie?.title}
           </h1>
 
           <div className="flex items-center gap-2 text-gray-300">
             <StarIcon className="w-5 h-5 text-primary fill-primary" />
-            {show.movie.vote_average?.toFixed(1)} User Rating
+            {show.movie?.vote_average?.toFixed(1) || "N/A"}
           </div>
 
-          <p className="text-gray-400 mt-2 text-sm leading-relaxed max-w-xl">
-            {show.movie.overview}
+          <p className="text-gray-400 text-sm">
+            {show.movie?.overview}
           </p>
 
-          <p className="text-gray-300">
-            {TimeFormat(show.movie.runtime)} .{" "}
-            {show.movie.genres?.map((genre) => genre.name).join(", ")} .{" "}
-            {show.movie.release_date?.split("-")[0]}
+          <p className="text-gray-300 text-sm">
+            {show.movie?.runtime ? TimeFormat(show.movie.runtime) : "N/A"} •{" "}
+            {show.movie?.genres?.map((g) => g.name).join(", ") || "N/A"} •{" "}
+            {show.movie?.release_date?.split("-")[0] || "N/A"}
           </p>
 
-          <div className="flex items-center flex-wrap gap-4 mt-4">
+          <div className="flex gap-4 mt-4 flex-wrap">
             <button
               onClick={handleTrailer}
-              disabled={loadingTrailer}
-              className="flex items-center gap-2 px-7 py-3 text-sm bg-gray-900/80 hover:bg-gray-800 border border-white/10 hover:border-primary/40 transition rounded-full font-medium cursor-pointer active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-primary/30"
+              className="px-6 py-2 bg-gray-800 rounded-full text-sm flex items-center gap-2"
             >
-              <PlayCircleIcon className="w-5 h-5 text-primary" />
-              {loadingTrailer ? "Loading..." : "Watch Trailer"}
+              <PlayCircleIcon className="w-4 h-4" />
+              Trailer
             </button>
 
             {hasShows ? (
               <a
-                className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer active:scale-95 shadow-md shadow-primary/30 hover:shadow-primary/60"
                 href="#dateSelect"
+                className="px-6 py-2 bg-primary rounded-full text-sm"
               >
                 Buy Tickets
               </a>
             ) : (
               <button
                 disabled
-                className="px-10 py-3 text-sm bg-gray-700 text-gray-400 rounded-full font-medium cursor-not-allowed"
+                className="px-6 py-2 bg-gray-600 text-gray-300 rounded-full text-sm"
               >
                 Not Available
               </button>
             )}
 
-            <button
-              onClick={handleFavorite}
-              className="bg-gray-900/80 border border-white/10 hover:border-primary/40 p-3 rounded-full transition cursor-pointer active:scale-95 hover:shadow-md hover:shadow-primary/30"
-            >
+            <button onClick={handleFavorite}>
               <Heart
                 className={`w-5 h-5 ${
-                  favorites?.find((movie) => String(movie._id) === String(id))
+                  favorites?.find((m) => String(m._id) === String(id))
                     ? "fill-primary text-primary"
-                    : "text-white"
+                    : ""
                 }`}
               />
             </button>
@@ -205,87 +201,28 @@ const MovieDeatils = () => {
         </div>
       </div>
 
-      <p className="relative z-10 text-lg font-medium mt-20">
-        Your Favorite Cast
-      </p>
-
-      <div className="relative z-10 overflow-x-auto no-scrollbar mt-8 pb-4">
-        <div className="flex items-center gap-5 w-max px-4">
-          {show.movie.casts?.slice(0, 12).map((cast, index) => (
-            <div
-              key={index}
-              className="group flex flex-col items-center text-center"
-            >
-              <img
-                loading="lazy"
-                src={
-                  cast.profile_path
-                    ? image_base_url + cast.profile_path
-                    : "https://placehold.co/100x100?text=No+Image"
-                }
-                alt={cast.name}
-                className="rounded-full h-20 md:h-20 aspect-square object-cover bg-gray-800 border border-white/10 group-hover:border-primary/50 transition"
-              />
-              <p className="text-sm mt-2 text-gray-300 max-w-24 truncate">
-                {cast.name}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {hasShows && (
-        <div className="relative z-10">
+        <div id="dateSelect" className="mt-10">
           <DateSelect dateTime={show.dateTime} id={id} />
         </div>
       )}
 
-      <p className="relative z-10 text-lg font-medium mt-20 mb-8">
-        You may Also Like
-      </p>
-
-      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 mt-4">
-        {shows
-          .filter((movie) => String(movie._id) !== String(id))
-          .slice(0, 4)
-          .map((movie, index) => (
-            <MovieCard key={index} movie={movie} />
-          ))}
-      </div>
-
-      <div className="relative z-10 flex justify-center mt-20">
-        <button
-          onClick={() => {
-            navigate("/movies");
-            window.scrollTo(0, 0);
-          }}
-          className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer shadow-md shadow-primary/30 hover:shadow-primary/60 active:scale-95"
-        >
-          Show More
-        </button>
+      <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4">
+        {shows.slice(0, 4).map((movie) => (
+          <MovieCard key={movie._id} movie={movie} />
+        ))}
       </div>
 
       {showTrailer && trailerKey && (
-        <div
-          onClick={closeTrailer}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-4"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-4xl"
-          >
-            <button
-              onClick={closeTrailer}
-              className="absolute -top-12 right-0 text-white bg-gray-900 hover:bg-gray-800 border border-white/10 p-2 rounded-full"
-            >
-              <X className="w-6 h-6" />
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
+          <div className="relative w-full max-w-3xl">
+            <button onClick={closeTrailer} className="absolute -top-10 right-0">
+              <X />
             </button>
 
             <iframe
-              className="w-full aspect-video rounded-2xl border border-white/10 shadow-2xl shadow-primary/20"
-              src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&rel=0&modestbranding=1&vq=hd1080`}
-              title="Movie Trailer"
-              allow="autoplay; encrypted-media; picture-in-picture"
+              className="w-full aspect-video"
+              src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&vq=hd1080`}
               allowFullScreen
             ></iframe>
           </div>
