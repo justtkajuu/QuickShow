@@ -8,10 +8,15 @@ const showRouter = express.Router()
 showRouter.get('/now-playing', protectAdmin, getNowPlayingMovies)
 showRouter.post('/add', protectAdmin, addShow)
 showRouter.get('/all', getShows)
-showRouter.get("/upcoming", getUpcomingMovies);
-showRouter.get("/trending", getTrendingMovies);
+
+showRouter.get("/upcoming", getUpcomingMovies)
+showRouter.get("/trending", getTrendingMovies)
+
+// 🔥 ye upar hona chahiye
+showRouter.get("/trailer/:movieId", getMovieTrailer)
+showRouter.get("/tmdb/:movieId", getMovieDetailsFromTMDB)
+
+// ❗ ye hamesha last me
 showRouter.get("/:movieId", getShow)
-showRouter.get("/trailer/:movieId", getMovieTrailer);
-showRouter.get("/tmdb/:movieId", getMovieDetailsFromTMDB);
 
 export default showRouter

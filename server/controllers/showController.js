@@ -303,6 +303,7 @@ export const getMovieDetailsFromTMDB = async (req, res) => {
       `https://api.themoviedb.org/3/movie/${movieId}`,
       {
         headers: {
+          accept: "application/json",
           Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
         },
       }
@@ -312,6 +313,7 @@ export const getMovieDetailsFromTMDB = async (req, res) => {
       `https://api.themoviedb.org/3/movie/${movieId}/credits`,
       {
         headers: {
+          accept: "application/json",
           Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
         },
       }
@@ -325,8 +327,8 @@ export const getMovieDetailsFromTMDB = async (req, res) => {
         overview: movieDetails.overview,
         poster_path: movieDetails.poster_path,
         backdrop_path: movieDetails.backdrop_path,
-        genres: movieDetails.genres,
-        casts: credits.cast,
+        genres: movieDetails.genres || [],
+        casts: credits.cast || [],
         release_date: movieDetails.release_date,
         runtime: movieDetails.runtime,
         vote_average: movieDetails.vote_average,
@@ -334,9 +336,14 @@ export const getMovieDetailsFromTMDB = async (req, res) => {
       },
     });
   } catch (error) {
-    res.json({
+    console.log("TMDB DETAILS ERROR:", error.response?.data || error.message);
+
+    res.status(500).json({
       success: false,
-      message: error.message,
+      message:
+        error.response?.data?.status_message ||
+        error.message ||
+        "Failed to fetch movie details",
     });
   }
 };
