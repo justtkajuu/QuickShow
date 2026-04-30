@@ -15,7 +15,6 @@ const Releases = () => {
   const fetchUpcomingMovies = async () => {
     try {
       const { data } = await axios.get("/api/show/upcoming");
-      console.log("Upcoming API response:", data);
 
       if (data.success && Array.isArray(data.movies)) {
         setMovies(data.movies);
@@ -48,9 +47,9 @@ const Releases = () => {
   if (loading) return <Loading />;
 
   return movies.length > 0 ? (
-    <div className="relative my-40 mb-60 px-6 md:px-16 lg:px-40 xl:px-44 overflow-hidden min-h-[80vh]">
-      <BlurCircle top="150px" left="0px" />
-      <BlurCircle bottom="50px" right="50px" />
+    <div className="relative my-40 mb-60 px-6 md:px-16 lg:px-40 xl:px-44 min-h-[80vh]">
+      <BlurCircle top="120px" left="-80px" delay="0s" />
+      <BlurCircle bottom="80px" right="-80px" delay="1.5s" />
 
       <h1 className="text-lg font-medium my-4">Upcoming Releases</h1>
 
@@ -61,35 +60,44 @@ const Releases = () => {
           return (
             <div
               key={movie.id}
-              className="flex flex-col justify-between p-4 bg-gray-800 rounded-2xl hover:-translate-y-1 transition duration-300 w-full"
+              className="group relative flex flex-col justify-between p-4 bg-gray-900/80 backdrop-blur rounded-2xl 
+              border border-white/10 hover:border-primary/40 hover:-translate-y-2 transition-all duration-300 
+              w-full overflow-hidden"
             >
+              <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition duration-300 blur-2xl"></div>
+
               <img
+                loading="lazy"
                 src={
                   movie.poster_path
                     ? image_base_url + movie.poster_path
                     : "https://placehold.co/300x450?text=No+Image"
                 }
                 alt={movie.title}
-                className="rounded-lg h-52 w-full object-cover object-center"
+                className="relative z-10 rounded-lg h-52 w-full object-cover object-center group-hover:scale-105 transition duration-300"
               />
 
-              <p className="font-semibold mt-3 truncate">{movie.title}</p>
+              <div className="relative z-10">
+                <p className="font-semibold mt-3 truncate text-white">
+                  {movie.title}
+                </p>
 
-              <p className="flex items-center gap-2 text-sm text-gray-400 mt-2">
-                <CalendarDays className="w-4 h-4 text-primary" />
-                {movie.release_date || "Coming Soon"}
-              </p>
+                <p className="flex items-center gap-2 text-sm text-gray-400 mt-2">
+                  <CalendarDays className="w-4 h-4 text-primary" />
+                  {movie.release_date || "Coming Soon"}
+                </p>
 
-              <p className="text-sm text-gray-400 mt-2 line-clamp-3">
-                {movie.overview || "No description available."}
-              </p>
+                <p className="text-sm text-gray-400 mt-2 line-clamp-3">
+                  {movie.overview || "No description available."}
+                </p>
+              </div>
 
               <button
                 onClick={() => handleNotify(movie.id, movie.title)}
-                className={`flex items-center justify-center gap-2 mt-4 px-4 py-2 text-xs rounded-full transition font-medium cursor-pointer active:scale-95 ${
+                className={`relative z-10 flex items-center justify-center gap-2 mt-4 px-4 py-2 text-xs rounded-full transition font-medium cursor-pointer active:scale-95 shadow-md ${
                   isNotified
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-primary hover:bg-primary-dull"
+                    ? "bg-green-600 hover:bg-green-700 shadow-green-600/30"
+                    : "bg-primary hover:bg-primary-dull shadow-primary/30 hover:shadow-primary/60"
                 }`}
               >
                 {isNotified ? (

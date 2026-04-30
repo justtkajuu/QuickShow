@@ -102,20 +102,22 @@ const MovieDeatils = () => {
   }, []);
 
   return show ? (
-    <div className="px-6 md:px-16 lg:px-40 pt-30 md:pt-50">
-      <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
+    <div className="relative px-6 md:px-16 lg:px-40 pt-30 md:pt-50 min-h-screen overflow-hidden">
+      <BlurCircle top="80px" left="-120px"/>
+      <BlurCircle bottom="120px" right="-120px" />
+
+      <div className="relative z-10 flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
         <img
+          loading="lazy"
           src={image_base_url + show.movie.poster_path}
           alt={show.movie.title}
-          className="max-md:mx-auto rounded-xl h-104 max-w-70 object-cover"
+          className="max-md:mx-auto rounded-2xl h-104 max-w-70 object-cover border border-white/10 shadow-xl shadow-primary/20"
         />
 
         <div className="relative flex flex-col gap-3">
-          <BlurCircle top="-100px" left="-100px" />
+          <p className="text-primary font-medium tracking-wide">ENGLISH</p>
 
-          <p className="text-primary">ENGLISH</p>
-
-          <h1 className="text-4xl font-semibold max-w-96 text-balance">
+          <h1 className="text-4xl font-semibold max-w-96 text-balance text-white">
             {show.movie.title}
           </h1>
 
@@ -124,11 +126,11 @@ const MovieDeatils = () => {
             {show.movie.vote_average.toFixed(1)} User Rating
           </div>
 
-          <p className="text-gray-400 mt-2 text-sm leading-tight max-w-xl">
+          <p className="text-gray-400 mt-2 text-sm leading-relaxed max-w-xl">
             {show.movie.overview}
           </p>
 
-          <p>
+          <p className="text-gray-300">
             {TimeFormat(show.movie.runtime)} .{" "}
             {show.movie.genres.map((genre) => genre.name).join(", ")} .{" "}
             {show.movie.release_date.split("-")[0]}
@@ -138,14 +140,14 @@ const MovieDeatils = () => {
             <button
               onClick={handleTrailer}
               disabled={loadingTrailer}
-              className="flex items-center gap-2 px-7 py-3 text-sm bg-gray-800 hover:bg-gray-900 transition rounded-md font-medium cursor-pointer active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-7 py-3 text-sm bg-gray-900/80 hover:bg-gray-800 border border-white/10 hover:border-primary/40 transition rounded-full font-medium cursor-pointer active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-primary/30"
             >
-              <PlayCircleIcon className="w-5 h-5" />
+              <PlayCircleIcon className="w-5 h-5 text-primary" />
               {loadingTrailer ? "Loading..." : "Watch Trailer"}
             </button>
 
             <a
-              className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-md font-medium cursor-pointer active:scale-95"
+              className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer active:scale-95 shadow-md shadow-primary/30 hover:shadow-primary/60"
               href="#dateSelect"
             >
               Buy Tickets
@@ -153,13 +155,13 @@ const MovieDeatils = () => {
 
             <button
               onClick={handleFavorite}
-              className="bg-gray-700 p-2.5 rounded-full transition cursor-pointer active:scale-95"
+              className="bg-gray-900/80 border border-white/10 hover:border-primary/40 p-3 rounded-full transition cursor-pointer active:scale-95 hover:shadow-md hover:shadow-primary/30"
             >
               <Heart
                 className={`w-5 h-5 ${
-                  favorites?.find((movie) => movie._id === id)
-                    ? "fill-primary text-white"
-                    : ""
+                  favorites?.find((movie) => String(movie._id) === String(id))
+                    ? "fill-primary text-primary"
+                    : "text-white"
                 }`}
               />
             </button>
@@ -167,44 +169,59 @@ const MovieDeatils = () => {
         </div>
       </div>
 
-      <p className="text-lg font-medium mt-20">Your Favorite Cast</p>
+      <p className="relative z-10 text-lg font-medium mt-20">
+        Your Favorite Cast
+      </p>
 
-      <div className="overflow-x-auto no-scrollbar mt-8 pb-4">
-        <div className="flex items-center gap-4 w-max px-4">
+      <div className="relative z-10 overflow-x-auto no-scrollbar mt-8 pb-4">
+        <div className="flex items-center gap-5 w-max px-4">
           {show.movie.casts.slice(0, 12).map((cast, index) => (
-            <div key={index} className="flex flex-col items-center text-center">
-              <img
+            <div
+              key={index}
+              className="group flex flex-col items-center text-center"
+            >
+              <img 
+                loading="lazy"
                 src={
                   cast.profile_path
                     ? image_base_url + cast.profile_path
                     : "https://placehold.co/100x100?text=No+Image"
                 }
                 alt={cast.name}
-                className="rounded-full h-20 md:h-20 aspect-square object-cover bg-gray-800"
+                className="rounded-full h-20 md:h-20 aspect-square object-cover bg-gray-800 border border-white/10 group-hover:border-primary/50 transition"
               />
-              <p>{cast.name}</p>
+              <p className="text-sm mt-2 text-gray-300 max-w-24 truncate">
+                {cast.name}
+              </p>
             </div>
           ))}
         </div>
       </div>
 
-      <DateSelect dateTime={show.dateTime} id={id} />
-
-      <p className="text-lg font-medium mt-20 mb-8">You may Also Like</p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 mt-4">
-        {shows.slice(0, 4).map((movie, index) => (
-          <MovieCard key={index} movie={movie} />
-        ))}
+      <div className="relative z-10">
+        <DateSelect dateTime={show.dateTime} id={id} />
       </div>
 
-      <div className="flex justify-center mt-20">
+      <p className="relative z-10 text-lg font-medium mt-20 mb-8">
+        You may Also Like
+      </p>
+
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 mt-4">
+        {shows
+          .filter((movie) => String(movie._id) !== String(id))
+          .slice(0, 4)
+          .map((movie, index) => (
+            <MovieCard key={index} movie={movie} />
+          ))}
+      </div>
+
+      <div className="relative z-10 flex justify-center mt-20">
         <button
           onClick={() => {
             navigate("/movies");
             window.scrollTo(0, 0);
           }}
-          className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-md font-medium cursor-pointer"
+          className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer shadow-md shadow-primary/30 hover:shadow-primary/60 active:scale-95"
         >
           Show More
         </button>
@@ -213,7 +230,7 @@ const MovieDeatils = () => {
       {showTrailer && trailerKey && (
         <div
           onClick={closeTrailer}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -221,13 +238,13 @@ const MovieDeatils = () => {
           >
             <button
               onClick={closeTrailer}
-              className="absolute -top-12 right-0 text-white bg-gray-800 hover:bg-gray-700 p-2 rounded-full"
+              className="absolute -top-12 right-0 text-white bg-gray-900 hover:bg-gray-800 border border-white/10 p-2 rounded-full"
             >
               <X className="w-6 h-6" />
             </button>
 
             <iframe
-              className="w-full aspect-video rounded-xl"
+              className="w-full aspect-video rounded-2xl border border-white/10 shadow-2xl shadow-primary/20"
               src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1`}
               title="Movie Trailer"
               allow="autoplay; encrypted-media"

@@ -259,35 +259,82 @@ const sendNewShowNotification = inngest.createFunction(
     id: "send-new-show-notification",
     triggers: [{ event: "app/show.added" }],
   },
-  async ({event}) => {
-    const {movieTitle} = event.data
+  async ({ event }) => {
+    const { movieTitle } = event.data;
 
-    const users = await User.find({})
+    const users = await User.find({});
 
-    for(const user of users){
-      const userEmail = user.email
-      const userName = user.name
+    for (const user of users) {
+      const userEmail = user.email;
+      const userName = user.name;
 
-      const subject = `New show Added: ${movieTitle}`
+      const subject = `New show Added: ${movieTitle}`;
 
-      const body = `<div style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2>Hi ${userName},</h2>
-        <p>We've just added a new show to our library:</p>
-        <h3 style="color: #F84565";>${movieTitle}</h3>
-        <p>Visit our website</p>
-        <br/>
-        <p>Thanks,<br/>QuickShow Team</p>
-      </div>`
+      const body = `
+<div style="margin:0; padding:0; background-color:#0f0f0f; font-family:Arial, sans-serif; color:#ffffff;">
+  
+  <div style="max-width:600px; margin:auto; background:#1a1a1a; border-radius:12px; overflow:hidden; border:1px solid #2a2a2a;">
+    
+    <!-- Header -->
+    <div style="background:#F84565; padding:16px; text-align:center;">
+      <h1 style="margin:0; font-size:22px;">🎬 QuickShow</h1>
+    </div>
+
+    <!-- Content -->
+    <div style="padding:24px;">
+      <h2 style="margin-top:0;">Hi ${userName}, 👋</h2>
+
+      <p style="color:#cccccc; line-height:1.6;">
+        A new show has just been added to our platform!
+      </p>
+
+      <h2 style="color:#F84565; margin:16px 0;">
+        ${movieTitle}
+      </h2>
+
+      <p style="color:#cccccc;">
+        Book your tickets now and enjoy the experience 🎟
+      </p>
+
+      <!-- Button -->
+      <div style="text-align:center; margin:24px 0;">
+        <a href="https://quickshow-self-one.vercel.app"
+          style="
+            display:inline-block;
+            padding:12px 24px;
+            background:#F84565;
+            color:white;
+            text-decoration:none;
+            border-radius:30px;
+            font-weight:bold;
+          ">
+          🎟 Book Now
+        </a>
+      </div>
+
+      <p style="color:#888888; font-size:12px;">
+        If you didn't expect this email, you can safely ignore it.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:16px; text-align:center; font-size:12px; color:#777;">
+      © ${new Date().getFullYear()} QuickShow. All rights reserved.
+    </div>
+
+  </div>
+</div>
+`;
 
       await sendEmail({
-      to: userEmail,
-      subject,
-      body,
-    })
+        to: userEmail,
+        subject,
+        body,
+      });
     }
-    return {message: "Notification sent."}
-  }
-)
+    return { message: "Notification sent." };
+  },
+);
 
 // create an empty array where w'll export future Inngest functions
 export const functions = [
@@ -297,5 +344,5 @@ export const functions = [
   releaseSeatsAndDeleteBooking,
   sendbookingConfirmationemail,
   sendshowReminders,
-  sendNewShowNotification
+  sendNewShowNotification,
 ];

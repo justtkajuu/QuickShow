@@ -5,14 +5,20 @@ const BlurCircle = ({
   left = "auto",
   right = "auto",
   bottom = "auto",
+  delay = "0s",
 }) => {
   return (
     <div
-      className="absolute -z-50 h-72 w-72 rounded-full 
-      bg-gradient-to-br from-blue-500/20 via-indigo-500/20 to-purple-500/20 
-      blur-[120px] opacity-60 
-      animate-[float_10s_ease-in-out_infinite]"
-      style={{ top, left, right, bottom }}
+      className="absolute -z-10 h-96 w-96 rounded-full 
+      bg-gradient-to-r from-red-500/50 via-rose-500/40 to-pink-500/50 
+      opacity-90 animate-spark-red mix-blend-screen"
+      style={{
+        top,
+        left,
+        right,
+        bottom,
+        animationDelay: delay,
+      }}
     />
   );
 };

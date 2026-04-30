@@ -31,14 +31,24 @@ input::-webkit-inner-spin-button{
   filter: invert(1);
 }
 
-@keyframes float {
+@keyframes sparkGlowRed {
   0% {
-    transform: translateY(0px) scale(1);
+    transform: scale(0.8);
+    opacity: 0.3;
+    filter: blur(60px);
   }
   50% {
-    transform: translateY(-20px) scale(1.05);
+    transform: scale(1.2);
+    opacity: 1;
+    filter: blur(110px);
   }
   100% {
-    transform: translateY(0px) scale(1);
+    transform: scale(0.9);
+    opacity: 0.4;
+    filter: blur(70px);
   }
+}
+
+.animate-spark-red {
+  animation: sparkGlowRed 4s ease-in-out infinite;
 }
