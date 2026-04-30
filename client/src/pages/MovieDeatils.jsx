@@ -280,7 +280,7 @@ const MovieDeatils = () => {
           >
             <button
               onClick={closeTrailer}
-              className="absolute mt-5 -top-12 right-0 text-white bg-gray-900 hover:bg-gray-800 border border-white/10 p-2 rounded-full"
+              className="absolute mt-2 -top-12 right-0 text-white bg-gray-900 hover:bg-gray-800 border border-white/10 p-2 rounded-full"
             >
               <X className="w-6 h-6" />
             </button>

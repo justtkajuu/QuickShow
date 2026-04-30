@@ -47,7 +47,7 @@ const FeaturedSection = () => {
             navigate("/movies");
             window.scrollTo(0, 0);
           }}
-          className="px-10 py-3 mb-5 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer shadow-md shadow-primary/30 hover:shadow-primary/60 active:scale-95"
+          className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer shadow-md shadow-primary/30 hover:shadow-primary/60 active:scale-95"
         >
           Show More
         </button>
