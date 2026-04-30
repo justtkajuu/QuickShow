@@ -67,18 +67,17 @@ export const addShow = async (req, res) => {
     }
 
     const showToCreate = [];
+
     showsInput.forEach((show) => {
-      const showDate = show.date;
-      show.time.forEach((time) => {
-        const dateTimeString = `${showDate}T${time}`;
-        showToCreate.push({
-          movie: movieId,
-          showDateTime: new Date(dateTimeString),
-          showPrice,
-          occupiedSeats: {},
-        });
-      });
-    });
+    const dateTimeString = `${show.date}T${show.time}`;
+
+    showToCreate.push({
+    movie: movieId,
+    showDateTime: new Date(dateTimeString),
+    showPrice,
+    occupiedSeats: {},
+  });
+});
 
     if (showToCreate.length > 0) {
       await Show.insertMany(showToCreate);
