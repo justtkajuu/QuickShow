@@ -67,9 +67,6 @@ export const addShow = async (req, res) => {
     }
 
     const showToCreate = [];
-
-const showToCreate = [];
-
 showsInput.forEach((show) => {
   const dateTimeString = `${show.date}T${show.time}:00+05:30`;
 
