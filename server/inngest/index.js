@@ -260,7 +260,7 @@ const sendNewShowNotification = inngest.createFunction(
     triggers: [{ event: "app/show.added" }],
   },
   async ({ event }) => {
-    const { movieTitle } = event.data;
+    const { movieTitle, movieId } = event.data;
 
     const users = await User.find({});
 
@@ -298,7 +298,7 @@ const sendNewShowNotification = inngest.createFunction(
 
       <!-- Button -->
       <div style="text-align:center; margin:24px 0;">
-        <a href="https://quickshow-self-one.vercel.app"
+        <a href="https://quickshow-web.vercel.app/movies/${movieId}"
           style="
             display:inline-block;
             padding:12px 24px;
