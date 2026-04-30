@@ -18,7 +18,7 @@ const Navbar = () => {
   const filteredMovies =
     search.trim().length > 0
       ? shows.filter((movie) =>
-          movie.title.toLowerCase().includes(search.toLowerCase()),
+          movie.title.toLowerCase().includes(search.toLowerCase())
         )
       : [];
 
@@ -47,51 +47,13 @@ const Navbar = () => {
             onClick={() => setIsOpen(false)}
           />
 
-          <Link
-            onClick={() => {
-              window.scrollTo(0, 0);
-              setIsOpen(false);
-            }}
-            to="/"
-          >
-            Home
-          </Link>
-          <Link
-            onClick={() => {
-              window.scrollTo(0, 0);
-              setIsOpen(false);
-            }}
-            to="/movies"
-          >
-            Movies
-          </Link>
-          <Link
-            onClick={() => {
-              window.scrollTo(0, 0);
-              setIsOpen(false);
-            }}
-            to="/"
-          >
-            Theaters
-          </Link>
-          <Link
-            onClick={() => {
-              window.scrollTo(0, 0);
-              setIsOpen(false);
-            }}
-            to="/trending"
-          >
-            Trending
-          </Link>
+          <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false); }} to="/">Home</Link>
+          <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false); }} to="/movies">Movies</Link>
+          <Link onClick={() => { window.scrollTo(0,0); setIsOpen(false); }} to="/trending">Trending</Link>
+          <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false); }} to="/releases">Releases</Link>
 
           {favorites?.length > 0 && (
-            <Link
-              onClick={() => {
-                window.scrollTo(0, 0);
-                setIsOpen(false);
-              }}
-              to="/favorite"
-            >
+            <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false); }} to="/favorite">
               Favorites
             </Link>
           )}
@@ -130,62 +92,60 @@ const Navbar = () => {
       </div>
 
       {showSearch && (
-        <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-start justify-center px-4 pt-28">
-          <div className="w-full max-w-xl bg-gray-900/95 border border-white/10 rounded-3xl p-4 shadow-2xl shadow-primary/20">
-            <div className="flex items-center gap-3">
-              <SearchIcon className="w-5 h-5 text-primary" />
+  <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-start justify-center px-4 pt-28">
+    <div className="w-full max-w-xl bg-gray-900/95 border border-white/10 rounded-3xl p-4 shadow-2xl shadow-primary/20">
+      <div className="flex items-center gap-3">
+        <SearchIcon className="w-5 h-5 text-primary" />
 
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search movies..."
-                autoFocus
-                className="flex-1 bg-transparent text-white outline-none"
-              />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search movies..."
+          autoFocus
+          className="flex-1 bg-transparent text-white outline-none"
+        />
 
-              <XIcon
-                onClick={() => {
-                  setShowSearch(false);
-                  setSearch("");
-                }}
-                className="w-5 h-5 cursor-pointer hover:text-primary transition"
-              />
-            </div>
+        <XIcon
+          onClick={() => {
+            setShowSearch(false);
+            setSearch("");
+          }}
+          className="w-5 h-5 cursor-pointer hover:text-primary transition"
+        />
+      </div>
 
-            <div className="mt-4 max-h-80 overflow-y-auto space-y-2">
-              {filteredMovies.slice(0, 6).map((movie) => (
-                <div
-                  key={movie._id}
-                  onClick={() => handleMovieClick(movie._id)}
-                  className="flex items-center gap-3 p-2 rounded-2xl hover:bg-primary/20 cursor-pointer transition"
-                >
-                  <img
-                    src={`${image_base_url}${movie.poster_path}`}
-                    alt={movie.title}
-                    className="w-12 h-16 object-cover rounded-lg"
-                  />
+      <div className="mt-4 max-h-80 overflow-y-auto space-y-2">
+        {filteredMovies.slice(0, 6).map((movie) => (
+          <div
+            key={movie._id}
+            onClick={() => handleMovieClick(movie._id)}
+            className="flex items-center gap-3 p-2 rounded-2xl hover:bg-primary/20 cursor-pointer transition"
+          >
+            <img
+              src={`${image_base_url}${movie.poster_path}`}
+              alt={movie.title}
+              className="w-12 h-16 object-cover rounded-lg"
+            />
 
-                  <div>
-                    <p className="text-sm font-medium text-white">
-                      {movie.title}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      {movie.release_date?.split("-")[0]}
-                    </p>
-                  </div>
-                </div>
-              ))}
-
-              {search && filteredMovies.length === 0 && (
-                <p className="text-sm text-gray-400 text-center py-6">
-                  No movie found
-                </p>
-              )}
+            <div>
+              <p className="text-sm font-medium text-white">{movie.title}</p>
+              <p className="text-xs text-gray-400">
+                {movie.release_date?.split("-")[0]}
+              </p>
             </div>
           </div>
-        </div>
-      )}
+        ))}
+
+        {search && filteredMovies.length === 0 && (
+          <p className="text-sm text-gray-400 text-center py-6">
+            No movie found
+          </p>
+        )}
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
